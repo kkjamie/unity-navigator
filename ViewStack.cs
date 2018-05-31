@@ -63,26 +63,6 @@ namespace UnityNavigator
 			}
 		}
 
-		/// <summary>
-		/// Experimental api - could be extension methods
-		/// </summary>
-		public void Navigate(
-			string newScreenId,
-			NavigationAction action,
-			Action<GameObject> initView,
-			ViewTransition transition = null)
-		{
-			// this would contain a switch to call the appropriate function
-			switch (action)
-			{
-				case NavigationAction.Push:
-					Push(newScreenId, initView, transition);
-					break;
-				case NavigationAction.Pop:
-					Pop(transition);
-					break;
-			}
-		}
 
 		public void Push(string newScreenId, Action<GameObject> initView = null, ViewTransition transition = null)
 		{
