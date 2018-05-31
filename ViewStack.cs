@@ -82,12 +82,6 @@ namespace UnityNavigator
 					Pop(transition);
 					break;
 			}
-
-			// an overload could templetize it TViewBehaviour and take out the gameObject from init,
-			// and find the actual script you want
-
-			// further to that one could pass data in and look for an interface
-			// IViewBehaviour<TViewData> with an Initialize(TViewData data)
 		}
 
 		public void Push(string newScreenId, Action<GameObject> initView = null, ViewTransition transition = null)

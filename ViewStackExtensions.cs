@@ -25,5 +25,20 @@ namespace UnityNavigator
 				}
 			}, transition);
 		}
+
+		public static void Navigate<TViewBehaviour, TArgs>(
+			this ViewStack viewStack,
+			string viewId,
+			NavigationAction action,
+			TArgs args,
+			ViewStack.ViewTransition transition = null) where TViewBehaviour : IViewBehaviour<TArgs>
+		{
+			viewStack.Navigate<TViewBehaviour>(
+				viewId,
+				action,
+				v => v.Init(args),
+				transition
+			);
+		}
 	}
 }
