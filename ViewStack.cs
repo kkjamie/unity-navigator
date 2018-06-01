@@ -43,7 +43,9 @@ namespace UnityNavigator
 		private List<ViewStackEntry> viewStack;
 		private IViewCreator viewCreator;
 		private bool transitionIsInProgress;
+		private bool isInitialized;
 
+		public event Action OnInitialized;
 		public event Action<string, GameObject> OnViewCreated;
 		public event Action<string, GameObject> OnViewDestroyed;
 		public event Action<string, GameObject> OnViewShown;
@@ -61,11 +63,20 @@ namespace UnityNavigator
 			{
 				throw new Exception("ViewStack doens't have an IViewCreator attached to it.");
 			}
-		}
 
+			isInitialized = true;
+
+			if (OnInitialized != null)
+			{
+				OnInitialized();
+				OnInitialized = null;
+			}
+		}
 
 		public void Push(string newScreenId, Action<GameObject> initView = null, ViewTransition transition = null)
 		{
+			if (!isInitialized) throw new Exception("ViewStack is not yet initialized. Listen for OnInitialized before you start navigating");
+
 			if (transitionIsInProgress)
 			{
 				// TODO: How to handle this?
@@ -84,6 +95,8 @@ namespace UnityNavigator
 
 		public void Pop(ViewTransition transition = null)
 		{
+			if (!isInitialized) throw new Exception("ViewStack is not yet initialized. Listen for OnInitialized before you start navigating");
+
 			if (transitionIsInProgress)
 			{
 				// TODO: How to handle this?
