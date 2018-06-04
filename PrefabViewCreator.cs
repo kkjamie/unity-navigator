@@ -10,8 +10,19 @@ namespace UnityNavigator
 		[Serializable]
 		private class ViewDefinition
 		{
-			public string viewID;
-			public string resourcePath;
+			[SerializeField]
+			private string viewID;
+			public string ViewId
+			{
+				get { return viewID; }
+			}
+
+			[SerializeField]
+			private string resourcePath;
+			public string ResourcePath
+			{
+				get { return resourcePath; }
+			}
 		}
 
 		[SerializeField]
@@ -21,7 +32,7 @@ namespace UnityNavigator
 
 		private void Awake()
 		{
-			views = viewsList.ToDictionary(v => v.viewID, v => v.resourcePath);
+			views = viewsList.ToDictionary(v => v.ViewId, v => v.ResourcePath);
 		}
 
 		public GameObject Create(string id)
