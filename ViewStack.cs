@@ -34,22 +34,21 @@ namespace UnityNavigator
 		}
 
 		public ViewTransition DefaultTransition { get; set; }
-
-		private ViewStackEntry TopViewEntry
-		{
-			get { return viewStack.Count > 0 ? viewStack[viewStack.Count - 1] : null; }
-		}
+		public string TopViewID => TopViewEntry?.ViewID;
+		private ViewStackEntry TopViewEntry => viewStack.Count > 0 ? viewStack[viewStack.Count - 1] : null;
 
 		private List<ViewStackEntry> viewStack;
 		private IViewCreator viewCreator;
 		private bool transitionIsInProgress;
 		private bool isInitialized;
 
-		public event Action OnInitialized;
 		public event Action<string, GameObject> OnViewCreated;
 		public event Action<string, GameObject> OnViewDestroyed;
 		public event Action<string, GameObject> OnViewShown;
 		public event Action<string, GameObject> OnViewHidden;
+		// From ID -> To ID
+		public event Action<string, string> OnTransitionStarted;
+		public event Action<string, string> OnTransitionComplete;
 
 		private void Awake()
 		{
@@ -58,6 +57,14 @@ namespace UnityNavigator
 
 		private void Start()
 		{
+			if (!isInitialized)
+			{
+				Init();
+			}
+		}
+
+		public void Init()
+		{
 			viewCreator = GetComponent<IViewCreator>();
 			if (viewCreator == null)
 			{
@@ -65,12 +72,6 @@ namespace UnityNavigator
 			}
 
 			isInitialized = true;
-
-			if (OnInitialized != null)
-			{
-				OnInitialized();
-				OnInitialized = null;
-			}
 		}
 
 		public void Push(string newScreenId, Action<GameObject> initView = null, ViewTransition transition = null)
@@ -137,8 +138,20 @@ namespace UnityNavigator
 				TopViewEntry.NotifyView<ITransitionCompleteHandler>(
 					t => t.HandleTransitionComplete());
 
-				if (OnViewHidden != null) OnViewHidden(oldTopViewEntry.ViewID, oldTopViewEntry.View);
-				if (OnViewShown != null) OnViewShown(TopViewEntry.ViewID, TopViewEntry.View);
+				if (OnTransitionComplete != null)
+				{
+					OnTransitionComplete(oldTopViewEntry == null ? null : oldTopViewEntry.ViewID, TopViewEntry.ViewID);
+				}
+
+				if (OnViewHidden != null && oldTopViewEntry != null)
+				{
+					OnViewHidden(oldTopViewEntry.ViewID, oldTopViewEntry.View);
+				}
+
+				if (OnViewShown != null)
+				{
+					OnViewShown(TopViewEntry.ViewID, TopViewEntry.View);
+				}
 
 				transitionIsInProgress = false;
 
