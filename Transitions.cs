@@ -8,7 +8,7 @@ namespace UnityNavigator
 		public static void Instant(GameObject from, GameObject to, Action onComplete = null)
 		{
 			if (from != null) from.SetActive(false);
-			to.SetActive(true);
+			if (to != null) to.SetActive(true);
 			if (onComplete != null) onComplete();
 		}
 	}

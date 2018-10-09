@@ -76,7 +76,7 @@ namespace UnityNavigator
 
 		public void Push(string newScreenId, Action<GameObject> initView = null, ViewTransition transition = null)
 		{
-			if (!isInitialized) throw new Exception("ViewStack is not yet initialized. Listen for OnInitialized before you start navigating");
+			if (!isInitialized) throw new Exception("ViewStack is not yet initialized.");
 
 			if (transitionIsInProgress)
 			{
@@ -132,11 +132,14 @@ namespace UnityNavigator
 
 			var oldView = oldTopViewEntry != null ? oldTopViewEntry.View : null;
 			transitionIsInProgress = true;
-			transition(oldView, TopViewEntry.View, () =>
+			transition(oldView, TopViewEntry != null ? TopViewEntry.View : null, () =>
 			{
 				// notify the new view that transition has completed
-				TopViewEntry.NotifyView<ITransitionCompleteHandler>(
-					t => t.HandleTransitionComplete());
+				if (TopViewEntry != null)
+				{
+					TopViewEntry.NotifyView<ITransitionCompleteHandler>(
+						t => t.HandleTransitionComplete());
+				}
 
 				if (OnTransitionComplete != null)
 				{
