@@ -94,11 +94,8 @@ namespace UnityNavigator
 
 			PerformTransition(
 				transition,
-				() =>
-				{
-					viewStack.Add(new ViewStackEntry(newScreenId, newView));
-					if (onCompete != null) onCompete.Invoke();
-				});
+				() => viewStack.Add(new ViewStackEntry(newScreenId, newView)),
+				onCompete);
 		}
 
 		public void Pop(ViewTransition transition = null, Action onComplete = null)
