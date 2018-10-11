@@ -74,7 +74,11 @@ namespace UnityNavigator
 			isInitialized = true;
 		}
 
-		public void Push(string newScreenId, Action<GameObject> initView = null, ViewTransition transition = null)
+		public void Push(
+			string newScreenId,
+			Action<GameObject> initView = null,
+			ViewTransition transition = null,
+			Action onCompete = null)
 		{
 			if (!isInitialized) throw new Exception("ViewStack is not yet initialized.");
 
@@ -90,11 +94,14 @@ namespace UnityNavigator
 
 			PerformTransition(
 				transition,
-				() => viewStack.Add(new ViewStackEntry(newScreenId, newView))
-			);
+				() =>
+				{
+					viewStack.Add(new ViewStackEntry(newScreenId, newView));
+					if (onCompete != null) onCompete.Invoke();
+				});
 		}
 
-		public void Pop(ViewTransition transition = null)
+		public void Pop(ViewTransition transition = null, Action onComplete = null)
 		{
 			if (!isInitialized) throw new Exception("ViewStack is not yet initialized. Listen for OnInitialized before you start navigating");
 
@@ -110,7 +117,11 @@ namespace UnityNavigator
 			PerformTransition(
 				transition,
 				() => viewStack.Remove(oldTopViewEntry),
-				() => DestroyView(oldTopViewEntry)
+				() =>
+				{
+					DestroyView(oldTopViewEntry);
+					if (onComplete != null) onComplete();
+				}
 			);
 		}
 
@@ -158,10 +169,7 @@ namespace UnityNavigator
 
 				transitionIsInProgress = false;
 
-				if (onComplete != null)
-				{
-					onComplete();
-				}
+				if (onComplete != null) onComplete();
 			});
 		}
 

@@ -10,16 +10,17 @@ namespace UnityNavigator
 			NavigationAction action,
 			string newScreenId,
 			Action<GameObject> initView,
-			ViewStack.ViewTransition transition = null)
+			ViewStack.ViewTransition transition = null,
+			Action onComplete = null)
 		{
 			// this would contain a switch to call the appropriate function
 			switch (action)
 			{
 				case NavigationAction.Push:
-					viewStack.Push(newScreenId, initView, transition);
+					viewStack.Push(newScreenId, initView, transition, onComplete);
 					break;
 				case NavigationAction.Pop:
-					viewStack.Pop(transition);
+					viewStack.Pop(transition, onComplete);
 					break;
 			}
 		}
@@ -29,13 +30,15 @@ namespace UnityNavigator
 			NavigationAction action,
 			string newScreenId,
 			TArgs args,
-			ViewStack.ViewTransition transition = null)
+			ViewStack.ViewTransition transition = null,
+			Action onComplete = null)
 		{
 			viewStack.Navigate<IViewBehaviour<TArgs>>(
 				action,
 				newScreenId,
 				v => v.Init(args),
-				transition
+				transition,
+				onComplete
 			);
 		}
 
@@ -44,7 +47,8 @@ namespace UnityNavigator
 			NavigationAction action,
 			string viewId,
 			Action<TViewBehaviour> initView = null,
-			ViewStack.ViewTransition transition = null)
+			ViewStack.ViewTransition transition = null,
+			Action onComplete = null)
 		{
 			viewStack.Navigate(action, viewId, view =>
 			{
@@ -58,7 +62,7 @@ namespace UnityNavigator
 				{
 					initView(viewBehaviour);
 				}
-			}, transition);
+			}, transition, onComplete);
 		}
 
 		public static void Navigate<TViewBehaviour, TArgs>(
@@ -66,13 +70,15 @@ namespace UnityNavigator
 			NavigationAction action,
 			string viewId,
 			TArgs args,
-			ViewStack.ViewTransition transition = null) where TViewBehaviour : IViewBehaviour<TArgs>
+			ViewStack.ViewTransition transition = null,
+			Action onComplete = null) where TViewBehaviour : IViewBehaviour<TArgs>
 		{
 			viewStack.Navigate<TViewBehaviour>(
 				action,
 				viewId,
 				v => v.Init(args),
-				transition
+				transition,
+				onComplete
 			);
 		}
 	}
