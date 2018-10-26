@@ -131,6 +131,14 @@ namespace UnityNavigator
 			var oldTopViewEntry = TopViewEntry;
 			manipulateState();
 
+			if (OnTransitionStarted != null)
+			{
+				OnTransitionStarted.Invoke(
+					oldTopViewEntry != null ? oldTopViewEntry.ViewID : null,
+					TopViewEntry != null ? TopViewEntry.ViewID : null
+				);
+			}
+
 			if (oldTopViewEntry != null)
 			{
 				// notify old view that transition has started
