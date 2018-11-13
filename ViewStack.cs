@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace UnityNavigator
@@ -117,6 +118,33 @@ namespace UnityNavigator
 				() =>
 				{
 					DestroyView(oldTopViewEntry);
+					if (onComplete != null) onComplete();
+				}
+			);
+		}
+
+		public void Clear(ViewTransition transition = null, Action onComplete = null)
+		{
+			if (!isInitialized) throw new Exception("ViewStack is not yet initialized. Listen for OnInitialized before you start navigating");
+
+			if (transitionIsInProgress)
+			{
+				// TODO: How to handle this?
+				// for now just return and prevent starting a new one whilst one is in progress
+				return;
+			}
+
+			var allViews = viewStack.ToList();
+
+			PerformTransition(
+				transition,
+				() => viewStack.Clear(),
+				() =>
+				{
+					foreach (var viewStackEntry in allViews)
+					{
+						DestroyView(viewStackEntry);
+					}
 					if (onComplete != null) onComplete();
 				}
 			);
